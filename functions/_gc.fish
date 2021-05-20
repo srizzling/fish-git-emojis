@@ -18,10 +18,10 @@ function _gc
     end
     switch (count $argv)
         case '4'
-            set cmd git commit -m "\"$argv[1] $argv[2]($argv[3])$breaking: $argv[4..-1]\"" $footers
+            set cmd git commit -m "\"$argv[2]($argv[3])$breaking: $argv[1] $argv[4..-1]\"" $footers -e
         case '3'
-            set cmd git commit -m "\"$argv[1] $argv[2]$breaking: $argv[3..-1]\"" $footers
-        case '*'
+            set cmd git commit -m "\"$argv[2]$breaking: $argv[1] $argv[3..-1]\"" $footers -e
+        case '2'
             set cmd git commit -m "$argv"
     end
     eval $cmd
