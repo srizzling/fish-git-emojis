@@ -22,7 +22,7 @@ function _gc
         case '3'
             set cmd git commit -m "\"$argv[2]$breaking: $argv[1] $argv[3..-1]\"" $footers -e
         case '2'
-            set cmd git commit -m "$argv"
+            set cmd git commit -me "$argv"
     end
     eval $cmd
 end
