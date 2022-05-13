@@ -1,28 +1,21 @@
 function _gc
-    argparse --name=_gc 'k/breaking' 'f/footer=+' 'b/b-footer=+' -- $argv
-    set -l breaking ""
-    set -l footers ""
-    set -l cmd
-    if set -q _flag_breaking
-        set breaking '!'
-    end
-    if set -q _flag_footer
-        for f in $_flag_footer
-            set -a footers "-m \"$f\""
-        end
-    end
-    if set -q _flag_b_footer
-        for f in $_flag_b_footer
-            set -a footers "-m \"BREAKING CHANGE: $f\""
-        end
-    end
+	# arg1 is the type
+	# arg2 is the scope
+	# arg3 is the emoji
+	# arg4 is the rest of the the message
+
+	set --local msg ""
+ 	set jiraId (git rev-parse --abbrev-ref HEAD | string match -r '(?i)[A-Z]{2,}-\d+' | tr -d \n | string upper | tr -d \n)
     switch (count $argv)
         case '4'
-            set cmd git commit -m "\"$argv[2]($argv[3])$breaking: $argv[1] $argv[4..-1]\"" $footers -e
+            set msg "$argv[2]($argv[3]): $argv[1] $argv[4..-1]"
         case '3'
-            set cmd git commit -m "\"$argv[2]$breaking: $argv[1] $argv[3..-1]\"" $footers -e
+            set msg "$argv[2]: $argv[1] $argv[3..-1]"
         case '2'
-            set cmd git commit -me "$argv"
+            set msg "$argv"
     end
-    eval $cmd
+	if test -n "$jiraId"
+		set msg "$msg ($jiraId)"
+	end
+    git commit -em "$msg"
 end
