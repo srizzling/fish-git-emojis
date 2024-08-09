@@ -19,9 +19,9 @@ function _gc
 		set msg "$msg ($jiraId)"
 	end
     if test "$argv[1]" = "🚧"
-        git commit --no-verify -m "$msg"
+        git commit --no-verify -sm "$msg"
     else
-        git commit -em "$msg"
+        git commit -esm "$msg"
     end
 
 end
