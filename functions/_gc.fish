@@ -6,6 +6,7 @@ function _gc
 
 	set --local msg ""
  	set jiraId (git rev-parse --abbrev-ref HEAD | string match -r '(?i)[A-Z]{2,}-\d+' | tr -d \n | string upper | tr -d \n)
+
     switch (count $argv)
         case '4'
             set msg "$argv[2]($argv[3]): $argv[1] $argv[4..-1]"
@@ -17,5 +18,10 @@ function _gc
 	if test -n "$jiraId"
 		set msg "$msg ($jiraId)"
 	end
-    git commit -em "$msg"
+    if test "$argv[1]" = "🚧"
+        git commit --no-verify -m "$msg"
+    else
+        git commit -em "$msg"
+    end
+
 end
