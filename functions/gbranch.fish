@@ -14,6 +14,18 @@ function gbranch
         set cleanedSummary (echo $issueSummary | tr ' ' '-' | string lower)
         set branchName (string join '-' $issueKey $cleanedSummary)
         set branchName (echo $branchName | string lower)
+
+        if git rev-parse --verify --quiet $branchName
+            echo "Branch '$branchName' already exists."
+            set confirm (gum confirm "Would you like to create a new branch with suffix '-v2'?")
+            if test $confirm = "true"
+                set branchName $branchName"-v2"
+            else
+                echo "Aborting branch creation."
+                return
+            end
+        end
+
         echo "Branch Name: "$branchName
         git checkout -b $branchName
     end
@@ -32,19 +44,11 @@ function gbranch
             create_branch $issueKey $issueSummary
         case '*'
             echo "Multiple issues are assigned to you:"
-            for i in (seq $numIssues)
-                set issue (parse_issue $issues[$i])
-                echo $i": "$issue
-            end
-            echo "Please choose one to create a branch. Enter the number of the issue:"
-            read -l choice
-            if test $choice -ge 1 -a $choice -le $numIssues
-                set issueKey (echo $issues[$choice] | awk '{print $1}')
-                set issueSummary (echo $issues[$choice] | awk '{$1=""; print $0}' | string trim)
-                echo "Chosen issue: "$issueKey" - "$issueSummary
-                create_branch $issueKey $issueSummary
-            else
-                echo "Invalid choice."
-            end
+            set options (for i in (seq $numIssues); parse_issue $issues[$i]; end)
+            set selectedIssue (echo $options | gum choose)
+            set issueKey (echo $selectedIssue | awk '{print $1}')
+            set issueSummary (echo $selectedIssue | awk '{$1=""; print $0}' | string trim)
+            echo "Chosen issue: "$issueKey" - "$issueSummary
+            create_branch $issueKey $issueSummary
     end
 end
