@@ -25,7 +25,6 @@ function gbranch
                 echo "Aborting branch creation."
                 return
             end
-            set branchName $branchName"-v2"
         end
 
         git checkout -b $branchName
