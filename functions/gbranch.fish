@@ -25,7 +25,6 @@ function gbranch
             set branchName $branchName"-v2"
         end
 
-        echo "Branch Name: "$branchName
         git checkout -b $branchName
     end
 
