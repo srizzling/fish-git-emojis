@@ -27,6 +27,7 @@ function gbranch
             end
         end
 
+        echo "Branch Name: "$branchName
         git checkout -b $branchName
     end
 
