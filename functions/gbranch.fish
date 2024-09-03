@@ -18,9 +18,7 @@ function gbranch
         if git rev-parse --verify --quiet $branchName
             echo "Branch '$branchName' already exists."
             set confirm (gum confirm "Would you like to create a new branch with suffix '-v2'?")
-            if test $confirm = "true"
-                set branchName $branchName"-v2"
-            else
+            if test -z "$confirm" -o "$confirm" = "false"
                 echo "Aborting branch creation."
                 return
             end
