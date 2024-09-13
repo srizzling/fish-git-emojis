@@ -11,10 +11,13 @@ function gbranch
     end
 
     function create_branch -a issueKey issueSummary
-        set cleanedSummary (echo $issueSummary | tr ' ' '-' | string lower)
-        set branchName (string join '-' $issueKey $cleanedSummary)
-        set branchName (echo $branchName | string lower)
+        # Clean the issue summary by replacing spaces and special characters with hyphens
+        set cleanedSummary (echo $issueSummary | tr -cs '[:alnum:]' '-' | string lower | string trim -- '-')
 
+        # Join the issue key and cleaned summary with a hyphen
+        set branchName (string join '-' $issueKey $cleanedSummary)
+
+        # Check if the branch already exists
         if git rev-parse --verify --quiet $branchName
             echo "Branch '$branchName' already exists."
             if gum confirm "Would you like to create a new branch with suffix '-v2'?"
@@ -28,6 +31,7 @@ function gbranch
         echo "Branch Name: "$branchName
         git checkout -b $branchName
     end
+
 
     # Main script
     set issues (get_issues)
