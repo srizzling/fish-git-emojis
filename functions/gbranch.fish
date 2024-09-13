@@ -44,7 +44,7 @@ function gbranch
         case '*'
             echo "Multiple issues are assigned to you:"
             set options (for i in (seq $numIssues); parse_issue $issues[$i]; end)
-            set selectedIssue (echo $options | gum choose)
+            set selectedIssue (gum choose $options)
             set issueKey (echo $selectedIssue | awk '{print $1}')
             set issueSummary (echo $selectedIssue | awk '{$1=""; print $0}' | string trim)
             echo "Chosen issue: "$issueKey" - "$issueSummary
