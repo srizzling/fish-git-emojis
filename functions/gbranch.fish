@@ -12,7 +12,10 @@ function gbranch
 
     function create_branch -a issueKey issueSummary
         # Clean the issue summary by replacing spaces and special characters with hyphens
-        set cleanedSummary (echo $issueSummary | tr -cs '[:alnum:]' '-' | string lower | string trim -- '-')
+        set cleanedSummary (echo $issueSummary | tr -cs '[:alnum:]' '-' | string lower | string trim)
+
+        # Replace any leading or trailing hyphens separately (if needed)
+        set cleanedSummary (echo $cleanedSummary | sed 's/^-*//;s/-*$//')
 
         # Join the issue key and cleaned summary with a hyphen
         set branchName (string join '-' $issueKey $cleanedSummary)
@@ -31,6 +34,7 @@ function gbranch
         echo "Branch Name: "$branchName
         git checkout -b $branchName
     end
+
 
 
     # Main script
