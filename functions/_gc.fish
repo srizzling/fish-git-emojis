@@ -41,12 +41,31 @@ function _gc
 		set msg "$msg ($jiraId)"
 	end
 
+	# Check subject line length (conventional commit 50 char rule)
+	set --local subject_length (string length "$msg")
+	if test $subject_length -gt 50
+		# Calculate overhead to help user
+		set --local user_subject_length (string length "$clean_argv[-1]")
+		set --local overhead (math $subject_length - $user_subject_length)
+		set --local max_allowed (math 50 - $overhead)
+		echo "Error: Subject line is $subject_length characters (max 50)"
+		echo "Including type, scope, emoji, and JIRA ID, your subject can be max $max_allowed characters"
+		echo "Current subject: '$clean_argv[-1]' ($user_subject_length chars)"
+		return 1
+	end
+
+	# Wrap body text at 75 characters if provided
+	if test -n "$body"
+		# Support newlines in body and wrap at 75 chars
+		set body (printf "%s\n" $body | fold -w 75 -s)
+	end
+
 	# Commit with or without body
 	if test -n "$body"
 		if test "$clean_argv[1]" = "🚧"
-			git commit --no-verify -m "$msg" -m "$body"
+			printf "%s\n\n%s\n" "$msg" "$body" | git commit --no-verify -F -
 		else
-			git commit -m "$msg" -m "$body"
+			printf "%s\n\n%s\n" "$msg" "$body" | git commit -F -
 		end
 	else
 		if test "$clean_argv[1]" = "🚧"
