@@ -54,21 +54,20 @@ function _gc
 		return 1
 	end
 
-	# Wrap body text at 75 characters if provided
-	if test -n "$body"
-		# Support newlines in body by interpreting escape sequences
-		set body (echo -e $body)
-		# Wrap at 75 chars  
-		set body (printf "%s\n" $body | fold -w 75 -s)
-	end
-
 	# Commit with or without body
 	if test -n "$body"
+		# Create temporary file for commit message with proper formatting
+		set temp_file (mktemp)
+		printf "%s\n\n" "$msg" > $temp_file
+		printf "%b" "$body" | fmt -w 75 >> $temp_file
+		
 		if test "$clean_argv[1]" = "🚧"
-			printf "%s\n\n%s\n" "$msg" "$body" | git commit --no-verify -F -
+			git commit --no-verify -F $temp_file
 		else
-			printf "%s\n\n%s\n" "$msg" "$body" | git commit -F -
+			git commit -F $temp_file
 		end
+		
+		rm $temp_file
 	else
 		if test "$clean_argv[1]" = "🚧"
 			git commit --no-verify -sm "$msg"
