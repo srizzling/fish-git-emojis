@@ -28,6 +28,19 @@ fish-git-emojis is a Fish shell plugin that provides shortcuts for creating Git 
 - `gwip` - Work in progress commits with random messages (🚧)
 - `gbranch` - Interactive JIRA-integrated branch creation
 
+### Commit Body Support
+All git commit commands support the `-b` flag for adding commit body:
+- `gfeat -b "detailed description" "short subject"`
+- `gfeat scope -b "body with\nnewlines" "subject"`
+- Body text is automatically wrapped at 75 characters per conventional commits
+- Supports newlines using `\n` in the body text
+
+### Conventional Commit Validation
+- Subject lines are limited to 50 characters (including type, scope, emoji, JIRA ID)
+- Commands will error with helpful guidance if subject exceeds limit
+- Shows maximum allowed characters for user's subject text
+- Follows conventional commit specification for consistent formatting
+
 ## Architecture
 
 ### Core Components
