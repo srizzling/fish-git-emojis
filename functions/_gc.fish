@@ -30,7 +30,13 @@ function _gc
 	# Process remaining arguments for subject
 	switch (count $clean_argv)
 		case '4'
-			set msg "$clean_argv[2]($clean_argv[3]): $clean_argv[1] $clean_argv[4..-1]"
+			# Check if scope is empty string
+			if test "$clean_argv[3]" = ""
+				echo "Warning: Empty scope provided. You can omit the scope parameter next time."
+				set msg "$clean_argv[2]: $clean_argv[1] $clean_argv[4..-1]"
+			else
+				set msg "$clean_argv[2]($clean_argv[3]): $clean_argv[1] $clean_argv[4..-1]"
+			end
 		case '3'
 			set msg "$clean_argv[2]: $clean_argv[1] $clean_argv[3..-1]"
 		case '2'
