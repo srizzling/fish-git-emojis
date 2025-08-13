@@ -59,7 +59,38 @@ function _gc
 		# Create temporary file for commit message with proper formatting
 		set temp_file (mktemp)
 		printf "%s\n\n" "$msg" > $temp_file
-		printf "%b" "$body" | fmt -w 75 >> $temp_file
+		# Process body to preserve paragraph breaks while wrapping at 75 chars
+		printf "%b" "$body" | awk '
+		BEGIN { RS = "\n\n" }
+		{
+			# Preserve bullet points by converting internal newlines to spaces but keeping bullet structure
+			gsub(/\n- /, "\n- ")
+			gsub(/\n/, " ")
+			gsub(/ - /, "\n- ")
+			
+			# Split by newlines to handle bullet points separately
+			split($0, lines, "\n")
+			for (j = 1; j <= length(lines); j++) {
+				line = lines[j]
+				# Wrap each line at 75 characters with word boundaries
+				while (length(line) > 75) {
+					for (i = 75; i > 0; i--) {
+						if (substr(line, i, 1) == " ") {
+							print substr(line, 1, i-1)
+							line = substr(line, i+1)
+							break
+						}
+					}
+					if (i == 0) {
+						print substr(line, 1, 75)
+						line = substr(line, 76)
+					}
+				}
+				if (length(line) > 0) print line
+			}
+			if (NR < NF) print ""
+		}
+		' >> $temp_file
 		
 		if test "$clean_argv[1]" = "🚧"
 			git commit --no-verify -F $temp_file
