@@ -56,7 +56,9 @@ function _gc
 
 	# Wrap body text at 75 characters if provided
 	if test -n "$body"
-		# Support newlines in body and wrap at 75 chars
+		# Support newlines in body by converting \n to actual newlines
+		set body (string replace -a '\\n' '\n' $body)
+		# Wrap at 75 chars
 		set body (printf "%s\n" $body | fold -w 75 -s)
 	end
 
