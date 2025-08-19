@@ -48,16 +48,19 @@ function _gc
 	end
 
 	# Check subject line length (conventional commit 50 char rule)
-	set --local subject_length (string length "$msg")
-	if test $subject_length -gt 50
-		# Calculate overhead to help user
-		set --local user_subject_length (string length "$clean_argv[-1]")
-		set --local overhead (math $subject_length - $user_subject_length)
-		set --local max_allowed (math 50 - $overhead)
-		echo "Error: Subject line is $subject_length characters (max 50)"
-		echo "Including type, scope, emoji, and JIRA ID, your subject can be max $max_allowed characters"
-		echo "Current subject: '$clean_argv[-1]' ($user_subject_length chars)"
-		return 1
+	# Skip length check for WIP commits
+	if test "$clean_argv[1]" != "🚧"
+		set --local subject_length (string length "$msg")
+		if test $subject_length -gt 50
+			# Calculate overhead to help user
+			set --local user_subject_length (string length "$clean_argv[-1]")
+			set --local overhead (math $subject_length - $user_subject_length)
+			set --local max_allowed (math 50 - $overhead)
+			echo "Error: Subject line is $subject_length characters (max 50)"
+			echo "Including type, scope, emoji, and JIRA ID, your subject can be max $max_allowed characters"
+			echo "Current subject: '$clean_argv[-1]' ($user_subject_length chars)"
+			return 1
+		end
 	end
 
 	# Commit with or without body
