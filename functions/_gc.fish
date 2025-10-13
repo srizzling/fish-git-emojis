@@ -81,8 +81,8 @@ function _gc
 			split($0, lines, "\n")
 			for (j = 1; j <= length(lines); j++) {
 				line = lines[j]
-				# Wrap each line at 75 characters with word boundaries
-				while (length(line) > 75) {
+				# Wrap each line at 72 characters with word boundaries
+				while (length(line) > 72) {
 					for (i = 75; i > 0; i--) {
 						if (substr(line, i, 1) == " ") {
 							print substr(line, 1, i-1)
